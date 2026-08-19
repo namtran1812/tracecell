@@ -389,3 +389,55 @@ Results are stored in:
 
 Only measured AWS benchmark results should be used for external performance
 claims.
+
+## Failure analysis
+
+TraceCell includes a local root-cause analysis layer for robotic traces.
+
+Each materialized trace can be analyzed for:
+
+- end-to-end latency SLO violations
+- subsystem latency SLO violations
+- explicit failure/fault/error events
+- subsystem bottlenecks
+- missing telemetry
+
+The analysis engine intentionally operates independently from AWS so failure
+logic can be tested deterministically without deploying infrastructure.
+
+Deterministic fault injection currently supports:
+
+    slow-stow
+    robot-failure
+    missing-inventory
+
+This allows the investigation workflow to be validated against known failure
+conditions before production telemetry is involved.
+
+The intended production flow is:
+
+    robotic subsystem
+          |
+          v
+       telemetry
+          |
+          v
+    EventBridge / SQS
+          |
+          v
+        Lambda
+          |
+          +----------> S3 raw archive
+          |
+          v
+       DynamoDB
+          |
+          v
+    TraceCell analysis
+          |
+          +---- latency SLO
+          +---- failure classification
+          +---- bottleneck detection
+          |
+          v
+    investigation console
