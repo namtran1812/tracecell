@@ -9,7 +9,9 @@
     "dev": "tsx src/index.ts",
     "demo:async": "tsx src/async-demo.ts",
     "build:infra": "npm --prefix infrastructure run build",
-    "synth": "npm run build && npm run build:infra && npm --prefix infrastructure run synth"
+    "synth": "npm run build && npm run build:infra && npm --prefix infrastructure run synth",
+    "build:web": "npm --prefix apps/web run build",
+    "dev:web": "npm --prefix apps/web run dev"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

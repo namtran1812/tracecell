@@ -161,3 +161,58 @@ A later milestone will benchmark two approaches:
 
 The measured latency difference between these paths will determine the
 project's performance claims.
+
+## Investigation API
+
+Milestone 5 introduces the latency-sensitive read path used by the
+investigation console.
+
+    React
+      |
+      v
+ API Gateway
+      |
+      v
+ Read Lambda
+      |
+      v
+  DynamoDB
+      |
+      v
+ materialized trace
+
+The read path intentionally avoids the raw S3 archive.
+
+S3 remains the historical source of truth while DynamoDB serves
+interactive operator queries.
+
+Current endpoint:
+
+    GET /traces/{traceId}
+
+A successful response returns the complete materialized ItemTrace.
+
+Future milestones will add:
+
+- item-based lookup
+- robot filtering
+- workcell filtering
+- subsystem filtering
+- status filtering
+- time ranges
+- pagination
+- near-real-time refresh
+
+## React investigation console
+
+The first frontend supports:
+
+- trace lookup
+- item and trace summary
+- end-to-end subsystem path
+- chronological event timeline
+- robot/workcell/container context
+- event-level metadata inspection
+
+The UI is designed as an investigation surface rather than a generic
+analytics dashboard.

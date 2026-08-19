@@ -9,6 +9,8 @@ import * as lambdaEventSources from "aws-cdk-lib/aws-lambda-event-sources";
 import * as logs from "aws-cdk-lib/aws-logs";
 import * as sqs from "aws-cdk-lib/aws-sqs";
 import * as s3 from "aws-cdk-lib/aws-s3";
+import * as apigwv2 from "aws-cdk-lib/aws-apigatewayv2";
+import * as integrations from "aws-cdk-lib/aws-apigatewayv2-integrations";
 
 export class TraceCellStack extends cdk.Stack {
   constructor(
@@ -136,6 +138,57 @@ export class TraceCellStack extends cdk.Stack {
           reportBatchItemFailures: true
         }
       )
+    );
+
+
+    const traceApiFunction = new lambda.Function(
+      this,
+      "TraceApiFunction",
+      {
+        runtime: lambda.Runtime.NODEJS_22_X,
+        handler: "get-trace-handler.handler",
+        code: lambda.Code.fromAsset("../dist/src/api"),
+        timeout: cdk.Duration.seconds(10),
+        memorySize: 256,
+        environment: {
+          TRACE_TABLE_NAME: traceTable.tableName
+        },
+        logRetention: logs.RetentionDays.ONE_WEEK
+      }
+    );
+
+    traceTable.grantReadData(traceApiFunction);
+
+    const traceApi = new apigwv2.HttpApi(
+      this,
+      "TraceApi",
+      {
+        corsPreflight: {
+          allowOrigins: ["*"],
+          allowHeaders: ["content-type"],
+          allowMethods: [
+            apigwv2.CorsHttpMethod.GET
+          ]
+        }
+      }
+    );
+
+    traceApi.addRoutes({
+      path: "/traces/{traceId}",
+      methods: [apigwv2.HttpMethod.GET],
+      integration:
+        new integrations.HttpLambdaIntegration(
+          "GetTraceIntegration",
+          traceApiFunction
+        )
+    });
+
+    new cdk.CfnOutput(
+      this,
+      "TraceApiUrl",
+      {
+        value: traceApi.apiEndpoint
+      }
     );
   }
 }
