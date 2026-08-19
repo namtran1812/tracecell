@@ -64,7 +64,13 @@ export class TraceCellStack extends cdk.Stack {
       {
         eventBus,
         eventPattern: {
-          source: [{ prefix: "tracecell." }],
+          source: [
+            "tracecell.vision",
+            "tracecell.routing",
+            "tracecell.robot-controller",
+            "tracecell.stow",
+            "tracecell.inventory"
+          ],
           detailType: ["TraceCellEvent"]
         }
       }
