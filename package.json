@@ -13,7 +13,9 @@
     "build:web": "npm --prefix apps/web run build",
     "dev:web": "npm --prefix apps/web run dev",
     "benchmark": "npm run build && node dist/src/benchmark/run.js",
-    "benchmark:quick": "npm run build && TRACECELL_TRACE_COUNT=10000 TRACECELL_REQUEST_COUNT=250 node dist/src/benchmark/run.js"
+    "benchmark:quick": "npm run build && TRACECELL_TRACE_COUNT=10000 TRACECELL_REQUEST_COUNT=250 node dist/src/benchmark/run.js",
+    "aws:seed": "npm run build && node scripts/seed-aws-benchmark.mjs",
+    "benchmark:aws": "node scripts/benchmark-aws.mjs"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

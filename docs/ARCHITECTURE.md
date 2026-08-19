@@ -327,3 +327,65 @@ These numbers are intentionally measured rather than hard-coded.
 
 Production AWS benchmarks will later include network latency, Lambda
 execution, S3/DynamoDB access, and cold-start effects.
+
+## Real AWS benchmark
+
+Milestone 7.5 benchmarks two deployed HTTP paths.
+
+### Operational path
+
+    client
+      |
+      v
+    API Gateway
+      |
+      v
+    Lambda
+      |
+      v
+    DynamoDB GetItem
+      |
+      v
+    materialized ItemTrace
+
+Endpoint:
+
+    GET /traces/{traceId}
+
+### Historical reconstruction path
+
+    client
+      |
+      v
+    API Gateway
+      |
+      v
+    Lambda
+      |
+      v
+    S3 GetObject
+      |
+      v
+    raw TraceEvent[]
+      |
+      v
+    correlateEvents()
+      |
+      v
+    ItemTrace
+
+Endpoint:
+
+    GET /benchmark/raw/{traceId}
+
+The benchmark client measures complete end-to-end request latency from the
+same machine against both deployed paths.
+
+A warmup phase runs before measured requests to reduce cold-start bias.
+
+Results are stored in:
+
+    benchmarks/results/latest.json
+
+Only measured AWS benchmark results should be used for external performance
+claims.
