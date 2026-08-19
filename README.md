@@ -49,27 +49,31 @@ Example:
 
 ## Architecture
 
-    Robotic subsystem simulators
-              |
-              v
-       Amazon EventBridge
-              |
-              v
-           Amazon SQS
-              |
-              v
-          AWS Lambda
-           /       \
-          /         \
-         v           v
-       S3         DynamoDB
-    raw events   materialized traces
-                    |
-                    v
-              API Gateway
-                    |
-                    v
-               React console
+
+```mermaid
+flowchart TD
+    V[Vision] --> EB[Amazon EventBridge]
+    R[Routing] --> EB
+    RC[Robot Controller] --> EB
+    S[Stow] --> EB
+    I[Inventory] --> EB
+
+
+    EB --> Q[Amazon SQS]
+    Q --> P[AWS Lambda Processor]
+
+
+    P --> S3[Amazon S3<br/>Raw Telemetry]
+    P --> DB[Amazon DynamoDB<br/>Materialized Traces]
+
+
+    DB --> API[API Gateway]
+    API --> RL[Read Lambda]
+    RL --> UI[React Investigation Console]
+
+
+    S3 --> HR[Historical Reconstruction]
+    HR --> UI
 
 ### Event ingestion
 
