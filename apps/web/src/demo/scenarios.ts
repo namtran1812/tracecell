@@ -1,4 +1,4 @@
-import type { ItemTrace, TraceEvent } from "../types";
+import type { ItemTrace, TraceEvent, Subsystem } from "../types";
 
 export type DemoScenario =
   | "healthy"
@@ -13,7 +13,7 @@ function timestamp(offsetMs: number): string {
 
 function event(
   eventId: string,
-  subsystem: string,
+  subsystem: Subsystem,
   eventType: string,
   offsetMs: number,
   durationMs?: number

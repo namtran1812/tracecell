@@ -13,6 +13,11 @@ import {
 } from "./components/TraceFilters";
 import { TraceResults } from "./components/TraceResults";
 import { RootCausePanel } from "./components/RootCausePanel";
+import { DemoScenarioPicker } from "./components/DemoScenarioPicker";
+import {
+  demoScenarios,
+  type DemoScenario
+} from "./demo/scenarios";
 import type { ItemTrace } from "./types";
 
 function duration(trace: ItemTrace) {
@@ -30,6 +35,9 @@ function duration(trace: ItemTrace) {
 }
 
 export default function App() {
+  const [demoScenario, setDemoScenario] =
+    useState<DemoScenario | null>(null);
+
   const [query, setQuery] =
     useState("TRACE-000001");
 
@@ -61,28 +69,33 @@ export default function App() {
   const [queryLoading, setQueryLoading] =
     useState(false);
 
+  const displayedTrace =
+    demoScenario === null
+      ? trace
+      : demoScenarios[demoScenario];
+
   const details = useMemo(() => {
-    if (!trace) {
+    if (!displayedTrace) {
       return null;
     }
 
     return {
       robotId:
-        trace.events.find(
+        displayedTrace.events.find(
           (event) => event.robotId
         )?.robotId ?? "—",
 
       workcellId:
-        trace.events.find(
+        displayedTrace.events.find(
           (event) => event.workcellId
         )?.workcellId ?? "—",
 
       containerId:
-        trace.events.find(
+        displayedTrace.events.find(
           (event) => event.containerId
         )?.containerId ?? "—"
     };
-  }, [trace]);
+  }, [displayedTrace]);
 
   async function applyFilters(
     append = false
@@ -170,6 +183,17 @@ export default function App() {
 
   return (
     <main>
+      {demoScenario === null && (
+        <button
+          type="button"
+          className="launch-demo"
+          onClick={() =>
+            setDemoScenario("healthy")
+          }
+        >
+          Launch local failure demo
+        </button>
+      )}
       <header className="topbar">
         <div>
           <span className="logo-mark">
@@ -257,7 +281,7 @@ export default function App() {
         )}
       </section>
 
-      {trace && details && (
+      {displayedTrace && details && (
         <section className="workspace">
           <div className="summary-card">
             <div>
@@ -265,10 +289,10 @@ export default function App() {
                 Item trace
               </div>
 
-              <h2>{trace.itemId}</h2>
+              <h2>{displayedTrace.itemId}</h2>
 
               <div className="trace-id">
-                {trace.traceId}
+                {displayedTrace.traceId}
               </div>
             </div>
 
@@ -277,7 +301,7 @@ export default function App() {
                 <span>Status</span>
                 <strong
                   className={
-                    trace.status ===
+                    displayedTrace.status ===
                     "COMPLETED"
                       ? "status completed"
                       : trace.status ===
@@ -286,21 +310,21 @@ export default function App() {
                         : "status"
                   }
                 >
-                  {trace.status}
+                  {displayedTrace.status}
                 </strong>
               </div>
 
               <div>
                 <span>Duration</span>
                 <strong>
-                  {duration(trace)}
+                  {duration(displayedTrace)}
                 </strong>
               </div>
 
               <div>
                 <span>Events</span>
                 <strong>
-                  {trace.events.length}
+                  {displayedTrace.events.length}
                 </strong>
               </div>
             </div>
@@ -319,7 +343,7 @@ export default function App() {
               </div>
             </div>
 
-            <TracePath trace={trace} />
+            <TracePath trace={displayedTrace} />
           </section>
 
           <div className="detail-grid">
@@ -345,7 +369,19 @@ export default function App() {
             </div>
           </div>
 
-          <RootCausePanel trace={trace} />
+          {demoScenario !== null && (
+            <DemoScenarioPicker
+              active={demoScenario}
+              onChange={setDemoScenario}
+              onExit={() =>
+                setDemoScenario(null)
+              }
+            />
+          )}
+
+          <RootCausePanel
+            trace={displayedTrace}
+          />
 
           <section className="panel">
             <div className="panel-header">
@@ -365,7 +401,7 @@ export default function App() {
             </div>
 
             <EventTimeline
-              events={trace.events}
+              events={displayedTrace.events}
             />
           </section>
         </section>
