@@ -11,7 +11,9 @@
     "build:infra": "npm --prefix infrastructure run build",
     "synth": "npm run build && npm run build:infra && npm --prefix infrastructure run synth",
     "build:web": "npm --prefix apps/web run build",
-    "dev:web": "npm --prefix apps/web run dev"
+    "dev:web": "npm --prefix apps/web run dev",
+    "benchmark": "npm run build && node dist/src/benchmark/run.js",
+    "benchmark:quick": "npm run build && TRACECELL_TRACE_COUNT=10000 TRACECELL_REQUEST_COUNT=250 node dist/src/benchmark/run.js"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

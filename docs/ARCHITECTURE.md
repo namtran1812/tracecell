@@ -260,3 +260,70 @@ An operator can now:
 
 This moves TraceCell from a single-item demo toward a real investigation
 tool.
+
+## Performance benchmark
+
+Milestone 7 introduces reproducible investigation-query benchmarks.
+
+Two data-access strategies are compared.
+
+### Raw reconstruction
+
+For each request:
+
+    traceId
+       |
+       v
+ raw telemetry collection
+       |
+       v
+ scan matching events
+       |
+       v
+ chronological correlation
+       |
+       v
+ ItemTrace
+
+This models a system that performs expensive reconstruction during every
+interactive investigation.
+
+### Materialized trace retrieval
+
+For each request:
+
+    traceId
+       |
+       v
+ materialized trace index
+       |
+       v
+ ItemTrace
+
+This models TraceCell's DynamoDB investigation path.
+
+### Default workload
+
+The default local benchmark creates:
+
+    100,000 traces
+           x
+        10 events
+           =
+    1,000,000 telemetry events
+
+It then performs 2,000 deterministic trace lookups through each path.
+
+The benchmark reports:
+
+- p50 latency
+- p95 latency
+- p99 latency
+- mean latency
+- throughput
+- percentage improvement
+
+These numbers are intentionally measured rather than hard-coded.
+
+Production AWS benchmarks will later include network latency, Lambda
+execution, S3/DynamoDB access, and cold-start effects.
