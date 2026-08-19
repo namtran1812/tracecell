@@ -53,7 +53,7 @@ export function injectFault(
           new Date(
             first +
               index *
-                750
+                1500
           ).toISOString();
       }
     );
