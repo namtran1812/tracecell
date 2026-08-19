@@ -93,3 +93,71 @@ transport mechanism.
 
 A later milestone will replace the local EventBus implementation with
 EventBridge and SQS while retaining the same application-level contracts.
+
+## Raw telemetry archive
+
+Milestone 4 introduces an immutable historical telemetry path.
+
+Each event processed by Lambda is written to S3 before the materialized
+DynamoDB trace is updated.
+
+The architecture now has two representations of system state:
+
+    EventBridge
+        |
+       SQS
+        |
+      Lambda
+       /  \
+      /    \
+     v      v
+    S3    DynamoDB
+    |        |
+    |        +--> optimized materialized trace
+    |
+    +--> raw source-of-truth telemetry
+
+### S3 object layout
+
+Raw telemetry is partitioned by event date and trace identifier:
+
+    events/
+      year=YYYY/
+        month=MM/
+          day=DD/
+            trace=TRACE-ID/
+              TIMESTAMP-EVENT-ID.json
+
+The date partitions prepare the archive for future analytical workloads.
+
+### Materialized path
+
+DynamoDB remains the latency-sensitive investigation path.
+
+A trace can be returned without reconstructing its complete event history
+during every request.
+
+### Historical path
+
+The raw S3 archive can independently reconstruct an item trace.
+
+This provides:
+
+- historical recovery
+- replay
+- debugging
+- validation of materialized state
+- future offline analytics
+
+### Benchmark motivation
+
+A later milestone will benchmark two approaches:
+
+    request
+       |
+       +--> S3 raw events --> reconstruction
+       |
+       +--> DynamoDB materialized trace
+
+The measured latency difference between these paths will determine the
+project's performance claims.

@@ -3,18 +3,33 @@ import type {
   SQSEvent
 } from "aws-lambda";
 
-import { TraceProcessor } from "../correlator/processor.js";
+import { ArchivingTraceProcessor } from "../correlator/archiving-processor.js";
+import { S3RawEventArchive } from "../archive/s3-archive.js";
 import { DynamoTraceStore } from "./dynamo-store.js";
 import { parseSqsEvent } from "./sqs-adapter.js";
 
 const tableName = process.env.TRACE_TABLE_NAME;
+const archiveBucketName =
+  process.env.RAW_EVENT_BUCKET_NAME;
 
 if (!tableName) {
   throw new Error("TRACE_TABLE_NAME is required");
 }
 
+if (!archiveBucketName) {
+  throw new Error("RAW_EVENT_BUCKET_NAME is required");
+}
+
 const store = new DynamoTraceStore(tableName);
-const processor = new TraceProcessor(store);
+
+const archive = new S3RawEventArchive(
+  archiveBucketName
+);
+
+const processor = new ArchivingTraceProcessor(
+  store,
+  archive
+);
 
 export async function handler(
   event: SQSEvent

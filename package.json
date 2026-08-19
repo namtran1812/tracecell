@@ -18,6 +18,7 @@
     "@types/aws-lambda": "^8.10.152"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.879.0"
+    "@aws-sdk/client-dynamodb": "^3.879.0",
+    "@aws-sdk/client-s3": "^3.879.0"
   }
 }
