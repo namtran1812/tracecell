@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc",
     "test": "node --test dist/tests/*.test.js",
-    "dev": "tsx src/index.ts"
+    "dev": "tsx src/index.ts",
+    "demo:async": "tsx src/async-demo.ts"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
