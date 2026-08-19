@@ -141,6 +141,14 @@ export class TraceCellStack extends cdk.Stack {
             process.cwd(),
             "../src/aws/lambda-handler.ts"
           ),
+          projectRoot: path.join(
+            process.cwd(),
+            ".."
+          ),
+          depsLockFilePath: path.join(
+            process.cwd(),
+            "../package-lock.json"
+          ),
           handler: "handler",
           timeout:
             cdk.Duration.seconds(30),
@@ -188,6 +196,14 @@ export class TraceCellStack extends cdk.Stack {
             process.cwd(),
             "../src/api/get-trace-handler.ts"
           ),
+          projectRoot: path.join(
+            process.cwd(),
+            ".."
+          ),
+          depsLockFilePath: path.join(
+            process.cwd(),
+            "../package-lock.json"
+          ),
           handler: "handler",
           timeout:
             cdk.Duration.seconds(10),
@@ -219,6 +235,14 @@ export class TraceCellStack extends cdk.Stack {
             process.cwd(),
             "../src/api/list-traces-handler.ts"
           ),
+          projectRoot: path.join(
+            process.cwd(),
+            ".."
+          ),
+          depsLockFilePath: path.join(
+            process.cwd(),
+            "../package-lock.json"
+          ),
           handler: "handler",
           timeout:
             cdk.Duration.seconds(10),
@@ -249,6 +273,14 @@ export class TraceCellStack extends cdk.Stack {
           entry: path.join(
             process.cwd(),
             "../src/api/benchmark/get-raw-trace-handler.ts"
+          ),
+          projectRoot: path.join(
+            process.cwd(),
+            ".."
+          ),
+          depsLockFilePath: path.join(
+            process.cwd(),
+            "../package-lock.json"
           ),
           handler: "handler",
           timeout:
