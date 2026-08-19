@@ -1,0 +1,42 @@
+{
+  "measuredAt": "2026-08-19T17:38:02.291Z",
+  "environment": {
+    "apiUrl": "https://x44y3gc765.execute-api.us-east-1.amazonaws.com",
+    "traceCount": 1000,
+    "rawEventCount": 10000,
+    "requestCount": 250,
+    "warmupCount": 20,
+    "node": "v22.19.0",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  "materialized": {
+    "latency": {
+      "count": 250,
+      "minMs": 45.81783400000131,
+      "maxMs": 165.5848329999999,
+      "meanMs": 66.79511715600006,
+      "p50Ms": 59.15570800000205,
+      "p95Ms": 129.63058300000193,
+      "p99Ms": 149.0010829999992
+    },
+    "throughputRequestsPerSecond": 14.899185777471638
+  },
+  "raw": {
+    "latency": {
+      "count": 250,
+      "minMs": 63.71187500000087,
+      "maxMs": 215.50100000000384,
+      "meanMs": 98.78254567999996,
+      "p50Ms": 87.04158300000199,
+      "p95Ms": 168.5852500000001,
+      "p99Ms": 184.66262500000448
+    },
+    "throughputRequestsPerSecond": 10.08776347484489
+  },
+  "improvement": {
+    "p50Percent": 32.03741710441928,
+    "p95Percent": 23.106806200422714,
+    "p99Percent": 19.311726994027307
+  }
+}
