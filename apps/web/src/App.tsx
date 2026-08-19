@@ -12,6 +12,7 @@ import {
   type Filters
 } from "./components/TraceFilters";
 import { TraceResults } from "./components/TraceResults";
+import { RootCausePanel } from "./components/RootCausePanel";
 import type { ItemTrace } from "./types";
 
 function duration(trace: ItemTrace) {
@@ -343,6 +344,8 @@ export default function App() {
               </strong>
             </div>
           </div>
+
+          <RootCausePanel trace={trace} />
 
           <section className="panel">
             <div className="panel-header">
