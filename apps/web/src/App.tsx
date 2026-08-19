@@ -4,9 +4,14 @@ import {
   useState
 } from "react";
 
-import { fetchTrace } from "./api";
+import { fetchTrace, fetchTraces } from "./api";
 import { EventTimeline } from "./components/EventTimeline";
 import { TracePath } from "./components/TracePath";
+import {
+  TraceFilters,
+  type Filters
+} from "./components/TraceFilters";
+import { TraceResults } from "./components/TraceResults";
 import type { ItemTrace } from "./types";
 
 function duration(trace: ItemTrace) {
@@ -36,6 +41,25 @@ export default function App() {
   const [error, setError] =
     useState<string | null>(null);
 
+
+  const [filters, setFilters] =
+    useState<Filters>({
+      itemId: "",
+      robotId: "",
+      workcellId: "",
+      subsystem: "",
+      status: ""
+    });
+
+  const [results, setResults] =
+    useState<ItemTrace[]>([]);
+
+  const [cursor, setCursor] =
+    useState<string | undefined>();
+
+  const [queryLoading, setQueryLoading] =
+    useState(false);
+
   const details = useMemo(() => {
     if (!trace) {
       return null;
@@ -58,6 +82,59 @@ export default function App() {
         )?.containerId ?? "—"
     };
   }, [trace]);
+
+  async function applyFilters(
+    append = false
+  ) {
+    setQueryLoading(true);
+    setError(null);
+
+    try {
+      const response =
+        await fetchTraces({
+          ...filters,
+          cursor:
+            append
+              ? cursor
+              : undefined,
+          limit: 20
+        });
+
+      setResults((current) =>
+        append
+          ? [
+              ...current,
+              ...response.traces
+            ]
+          : response.traces
+      );
+
+      setCursor(
+        response.nextCursor
+      );
+    } catch (queryError) {
+      setError(
+        queryError instanceof Error
+          ? queryError.message
+          : "Unable to query traces"
+      );
+    } finally {
+      setQueryLoading(false);
+    }
+  }
+
+  function resetFilters() {
+    setFilters({
+      itemId: "",
+      robotId: "",
+      workcellId: "",
+      subsystem: "",
+      status: ""
+    });
+
+    setResults([]);
+    setCursor(undefined);
+  }
 
   async function search(
     event: FormEvent
@@ -151,6 +228,31 @@ export default function App() {
           <div className="error">
             {error}
           </div>
+        )}
+      </section>
+
+      <section className="workspace">
+        <TraceFilters
+          filters={filters}
+          onChange={setFilters}
+          onApply={() =>
+            void applyFilters(false)
+          }
+          onReset={resetFilters}
+        />
+
+        {results.length > 0 && (
+          <TraceResults
+            traces={results}
+            loading={queryLoading}
+            hasMore={Boolean(cursor)}
+            onLoadMore={() =>
+              void applyFilters(true)
+            }
+            onSelect={(selected) =>
+              setTrace(selected)
+            }
+          />
         )}
       </section>
 

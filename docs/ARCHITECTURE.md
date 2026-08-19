@@ -216,3 +216,47 @@ The first frontend supports:
 
 The UI is designed as an investigation surface rather than a generic
 analytics dashboard.
+
+## Fleet-level investigation
+
+Milestone 6 expands TraceCell from single-trace lookup into fleet-level
+investigation.
+
+The API now supports:
+
+    GET /traces
+
+Query parameters:
+
+    itemId
+    robotId
+    workcellId
+    subsystem
+    status
+    limit
+    cursor
+
+The UI supports the same filters and paginated result loading.
+
+### Pagination
+
+The API returns an opaque cursor.
+
+Clients do not depend on DynamoDB key structure.
+
+This keeps the storage implementation private and allows the backend to
+change without breaking the React client.
+
+### Operational workflow
+
+An operator can now:
+
+1. filter by robot or workcell
+2. isolate failed or in-progress traces
+3. identify affected items
+4. open a specific trace
+5. inspect the correlated event timeline
+6. inspect subsystem-specific metadata
+
+This moves TraceCell from a single-item demo toward a real investigation
+tool.

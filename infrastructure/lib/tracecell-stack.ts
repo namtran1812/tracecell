@@ -183,6 +183,35 @@ export class TraceCellStack extends cdk.Stack {
         )
     });
 
+
+    const listTracesFunction = new lambda.Function(
+      this,
+      "ListTracesFunction",
+      {
+        runtime: lambda.Runtime.NODEJS_22_X,
+        handler: "list-traces-handler.handler",
+        code: lambda.Code.fromAsset("../dist/src/api"),
+        timeout: cdk.Duration.seconds(10),
+        memorySize: 256,
+        environment: {
+          TRACE_TABLE_NAME: traceTable.tableName
+        },
+        logRetention: logs.RetentionDays.ONE_WEEK
+      }
+    );
+
+    traceTable.grantReadData(listTracesFunction);
+
+    traceApi.addRoutes({
+      path: "/traces",
+      methods: [apigwv2.HttpMethod.GET],
+      integration:
+        new integrations.HttpLambdaIntegration(
+          "ListTracesIntegration",
+          listTracesFunction
+        )
+    });
+
     new cdk.CfnOutput(
       this,
       "TraceApiUrl",
