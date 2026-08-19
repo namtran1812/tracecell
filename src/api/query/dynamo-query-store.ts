@@ -1,6 +1,7 @@
 import {
   DynamoDBClient,
-  ScanCommand
+  ScanCommand,
+  type AttributeValue
 } from "@aws-sdk/client-dynamodb";
 
 import type {
@@ -24,7 +25,7 @@ export class DynamoTraceQueryStore {
     query: TraceQuery
   ): Promise<TraceQueryResult> {
     let exclusiveStartKey:
-      | Record<string, { S?: string }>
+      | Record<string, AttributeValue>
       | undefined;
 
     if (query.cursor) {
@@ -34,7 +35,7 @@ export class DynamoTraceQueryStore {
             query.cursor,
             "base64"
           ).toString("utf8")
-        );
+        ) as Record<string, AttributeValue>;
       } catch {
         throw new Error("invalid cursor");
       }
