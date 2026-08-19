@@ -304,7 +304,7 @@ export default function App() {
                     displayedTrace.status ===
                     "COMPLETED"
                       ? "status completed"
-                      : trace.status ===
+                      : displayedTrace.status ===
                           "FAILED"
                         ? "status failed"
                         : "status"
